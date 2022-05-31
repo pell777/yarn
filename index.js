@@ -1,14 +1,15 @@
 const express = require("express");
+
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const http = require("http");
 const cors = require("cors");
-const TOKEN = require("jsonwebtoken");
 const fs = require("fs");
 const { initDB } = require("./db");
 const ToDo = require("./db/models/todo.models");
 
 const SERVER_PORT = 3000;
-const TOKEN_KEY = "1a2b-3c4d-5e6f-7g8h";
+const TOKEN="1a2b-3c4d-5e6f-7g8h"
 const app = express();
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
@@ -23,7 +24,7 @@ app.use((req, res, next) => {
   console.log("IsSecure = ", req.secure);
   console.log("BODY", req.body);
   console.log("QUERY", req.query);
-  console.log("login", req.body.login);
+  console.log("login", req.body);
   console.log("password", req.params);
 
   next();
@@ -39,7 +40,7 @@ app.post("/auth", async (req, res) => {
   //РЕГИСТРАЦИЯ
 
   let user = await ToDo.findOne({ where: { login: req.body.login } });
-
+  const token1=jwt.sign({password:req.body.password},TOKEN,{expiresIn:"1h"})
   if (user) {
     return res
       .status(400)
@@ -50,6 +51,7 @@ app.post("/auth", async (req, res) => {
       const todo = await ToDo.create({
         login: req.body.login,
         password: hashPassword,
+        token:token1,
       });
       res.status(200).json(todo);
     } catch (error) {
@@ -83,38 +85,45 @@ app.get("/auth/:login", async (req, res) => {
   }
 });
 
-app.patch("/auth/newpassword", async (req, res) => {
+app.patch("/auth/:login/:password/:newpassword", async (req, res) => {
   //ИЗМЕНЕНИЕ ПАРОЛЯ
-  const user=await ToDo.findOne({where:{login:req.body.login}})
-  const password = bcrypt.compareSync(req.body.password,user.password)
+  const user = await ToDo.findOne({ where: { login: req.params.login } });
+  const password = bcrypt.compareSync(req.params.password, user.password);
   if (password) {
     try {
-      user.password=req.body.newpassword
-      res.status(200).json({message:"Пароль сменен"});
+      await ToDo.update(
+        {
+          password: req.params.newpassword,
+        },
+        {
+          where: { login: req.params.login },
+        }
+      );
+      res.status(200).json({ message: "Пароль сменен" });
     } catch (error) {
       res.status(500).json(error);
     }
   } else {
-    res.status(200).json({message:"Неверный логин или пароль"})
+    res.status(200).json({ message: "Неверный логин или пароль" });
   }
 });
 
 app.delete("/auth/:login/:password", async (req, res) => {
-  const user=await ToDo.findOne({where:{login:req.params.login}})
-  const password = bcrypt.compareSync(req.params.password,user.password)
+  const user = await ToDo.findOne({ where: { login: req.params.login } });
+  const password = bcrypt.compareSync(req.params.password, user.password);
   if (password) {
     try {
       await ToDo.destroy({
         where: {
-          login: `${req.params.login}`
-        }
-    })
-      res.status(200).json({message:"Пользователь удален"});
+          login: `${req.params.login}`,
+        },
+      });
+      res.status(200).json({ message: "Пользователь удален" });
     } catch (error) {
       res.status(500).json(error);
     }
   } else {
-    res.status(200).json({message:"Неверный логин или пароль"})
+    res.status(200).json({ message: "Неверный логин или пароль" });
   }
 });
 

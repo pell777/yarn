@@ -6,8 +6,9 @@ const cors = require("cors");
 const fs = require("fs");
 const { initDB } = require("../db");
 const ToDo = require("../db/models/todo.models");
+const { user } = require("pg/lib/defaults");
 
-const SERVER_PORT = process.env.PORT||3000;
+const SERVER_PORT = process.env.PORT || 3000;
 const TOKEN = "1a2b-3c4d-5e6f-7g8h";
 const app = express();
 
@@ -23,63 +24,54 @@ app.use((req, res, next) => {
   console.log("HOST = ", req.headers.host);
   console.log("IsSecure = ", req.secure);
   console.log("BODY", req.body);
-  console.log("QUERY", req.query);
+  console.log("QUERY", req.query.login);
   console.log("login", req.body);
-  console.log("password", req.params);
+  console.log("params", req.params);
 
   next();
 });
 
-app.post("/auth", async (req, res) => {
+app.post("/register", async (req, res) => {
   //РЕГИСТРАЦИЯ
-  let user = await ToDo.findOne({ where: { login: req.body.login } });
-  if (!user) {
-    try {
-      const hashPassword = bcrypt.hashSync(req.body.password, 5); //ХЕШИРОВАНИЕ ПАРОЛЯ
-      const token1 = jwt.sign(
-        //СОЗДАНИЕ ТОКЕНА
-        {
-          login: req.body.login,
-        },
-        TOKEN,
-      );
-      const todo = await ToDo.create({
+  try {
+    const hashPassword = bcrypt.hashSync(req.body.password, 5); //ХЕШИРОВАНИЕ ПАРОЛЯ
+    const token1 = jwt.sign(
+      //СОЗДАНИЕ ТОКЕНА
+      {
         login: req.body.login,
-        password: hashPassword,
-        token: token1,
-      });
-      res.status(200).json(todo);
-    } catch (error) {
-      res.status(500).json({ error });
-    }
-  } else {
-    res.status(400).json({ message: "Пользователь уже зарегестрирован" });
+      },
+      TOKEN
+    );
+    const todo = await ToDo.create({
+      login: req.body.login,
+      password: hashPassword,
+      token: token1,
+    });
+    res.status(200).json(todo);
+  } catch (error) {
+    res.status(500).json({ error });
   }
 });
 
 app.get("/auth/all", async (req, res) => {
   //ПОЛУЧИТЬ ВСЕХ
 
-    try {
-      res.status(200).json(await ToDo.findAll());
-    } catch (error) {
-      res.status(500).json(error);
-    }
+  try {
+    res.status(200).json(await ToDo.findAll());
+  } catch (error) {
+    res.status(500).json(error);
+  }
 });
 
-app.get("/auth/:token", async (req, res) => {
+app.get("/oneUser", async (req, res) => {
   //ПОЛУЧИТЬ ПО ЛОГИНУ
   try {
     const user = await ToDo.findOne({
       where: {
-        token: `${req.params.token}`,
+        login: `${req.query.login}`,
       },
     });
-    if (user) {
-      res.status(200).json(user);
-    } else {
-      res.status(400).json({ message: "Такого пользователя нет" });
-    }
+    return res.status(200).json(user);
   } catch (error) {
     res.status(500).json(error);
   }

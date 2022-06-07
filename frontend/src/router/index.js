@@ -1,5 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import AuthView from '../views/AuthView.vue'
+import RegView from '../views/RegView.vue'
 
 
 Vue.use(VueRouter)
@@ -7,10 +9,14 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/',
-    name: 'home',
-    component:app
+    name: 'auth',
+    component: () => import("@/views/AuthView.vue"),
   },
-  
+  {
+    path: '/register',
+    name: 'register',
+    component: () => import("@/views/RegView.vue"),
+  }
 ]
 
 const router = new VueRouter({

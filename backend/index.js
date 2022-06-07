@@ -25,7 +25,8 @@ app.use((req, res, next) => {
   console.log("IsSecure = ", req.secure);
   console.log("BODY", req.body);
   console.log("QUERY", req.query.login);
-  console.log("login", req.body);
+  console.log("QUERY", req.query.password);
+  console.log("login", req.body.login);
   console.log("params", req.params);
 
   next();
@@ -39,6 +40,7 @@ app.post("/register", async (req, res) => {
       //СОЗДАНИЕ ТОКЕНА
       {
         login: req.body.login,
+        password: req.body.password,
       },
       TOKEN
     );
@@ -77,30 +79,23 @@ app.get("/oneUser", async (req, res) => {
   }
 });
 
-app.patch("/auth/:token/:password/:newpassword", async (req, res) => {
-  //ИЗМЕНЕНИЕ ПАРОЛЯ
-  const token = await ToDo.findOne({ where: { token: req.params.token } });
-  if (token) {
-    const password = bcrypt.compareSync(req.params.password, token.password);
-    if (password) {
-      try {
-        await ToDo.update(
-          {
-            password: bcrypt.hashSync(req.params.newpassword, 5),
-          },
-          {
-            where: { token: req.params.token },
-          }
-        );
-        res.status(200).json({ message: "Пароль сменен" });
-      } catch (error) {
-        res.status(500).json(error);
+app.get("/authorization", async (req, res) => {
+  try {
+    const user = await ToDo.findOne({
+      where: { login: `${req.query.login}` },
+    });
+    const a = jwt.verify(user.token, TOKEN);
+    if (a) {
+      if (req.query.password === a.password) {
+        return res.status(200).json({message:true});
+      } else {
+        return res.status(200).json({message:false});
       }
     } else {
-      res.status(200).json({ message: "Неверный пароль" });
+      return res.status(200).json({message:false});
     }
-  } else {
-    res.status(200).json({ message: "Пользователь не существует" });
+  } catch (error) {
+    return res.status(200).json({message:false});
   }
 });
 

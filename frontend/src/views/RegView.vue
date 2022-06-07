@@ -1,10 +1,10 @@
 <template>
   <div id="app">
-    <form class="login" @submit.prevent="submittLogin">
+    <form class="login">
       <h1>Регистрация</h1>
-      <label>Введите свой Login </label>
+      <label>Введите свой Логин </label>
 
-      <input v-model="login" type="login" placeholder="login" />
+      <input required v-model="login" type="login" placeholder="login" />
       <br />
       <br />
       <label>Введите свой пароль </label>
@@ -12,7 +12,12 @@
       <br />
       <br />
       <label>Подтвердите свой пароль </label>
-      <input v-model="passwordConfirm" type="password" placeholder="Пароль" />
+      <input
+        required
+        v-model="passwordConfirm"
+        type="password"
+        placeholder="Пароль"
+      />
       <br />
       <br />
       <button @click="register()" type="button">Зарегистрироваться</button>
@@ -25,6 +30,7 @@
 
 <script>
 const axios = require("axios").default;
+
 export default {
   name: "RegView",
   data() {
@@ -33,6 +39,7 @@ export default {
       password: "",
       passwordConfirm: "",
       confirm: "",
+      TOKEN: "1a2b-3c4d-5e6f-7g8h",
     };
   },
   methods: {
@@ -41,7 +48,7 @@ export default {
       try {
         const p = await axios
           .get("http://localhost:3000/OneUser", {
-            params: { login: this.login },
+            params: { login: this.login, password: this.password },
           })
           .then(function (response) {
             return response.data.login;
@@ -50,7 +57,7 @@ export default {
             console.log(error);
           });
 
-        if (!p) {
+        if (p) {
           if (this.password === this.passwordConfirm) {
             await axios
               .post("http://localhost:3000/register", {

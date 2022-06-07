@@ -42,9 +42,6 @@ app.post("/auth", async (req, res) => {
           login: req.body.login,
         },
         TOKEN,
-        {
-          expiresIn: "1h",
-        }
       );
       const todo = await ToDo.create({
         login: req.body.login,

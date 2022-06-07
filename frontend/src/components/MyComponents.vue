@@ -1,73 +1,33 @@
 <template>
   <div class="root">
-    <div >
-      <div class="img" >
-        <img
-          v-show="isCatVisible"
-          width="500px"
-          src="..\public\vkPhoto.jpg"
-          alt="my photo"
-        />
-      </div>
-      <div class="img">
-        <button @click="isCatVisible = !isCatVisible">
-           Показать/спрятать {{ isCatVisible }}
-        </button>
-      </div>
-    </div>
-    <div>
-      <hr />
     <label
-      >Введите email
+      >Введите login
       <input
-        type="email"
-        :value="email"
-        @input="emailInput($event.target.value)"
+        type="login"
+        v-model="login"
       />
     </label>
     <label
       >Введите пароль
       <input
         type="password"
-        :value="password"
-        @input="passwordInput($event.target.value)"
+        v-model="password"
       />
     </label>
-    {{ userName }}
-    <p>Количество участников : {{ users.length }}</p>
-    <ul>
-      <li v-for="(user, index) of users" :key="index">
-        {{ `${index + 1} ${getFullName(user)}` }}
-      </li>
-    </ul>
-    </div>
+    <br>
+    <button
+    @click="register()">Добавить</button>
   </div>
 </template>
 
 <script>
+const axios = require("axios").default;
 export default {
   name: "Mycomponents",
   data() {
     return {
-      isCatVisible: "true",
-      email: "example@mail.ru",
+      login: "login",
       password: "123656",
-      users: [
-        {
-          firstName: "Islam",
-          secondName: "Darbishev",
-        },
-        {
-          firstName: "Tasya",
-          secondName: "Sidorkina",
-        },
-        {
-          firstName: "Ismail",
-          secondName: "Hanaliev",
-        },
-      ],
-      pages: 3,
-      currentPage: 1,
     };
   },
   computed: {
@@ -76,23 +36,19 @@ export default {
     },
   },
   methods: {
-    getFullName(user) {
-      return user.firstName + " " + user.secondName;
-    },
-    emailInput(value) {
-      this.email = value;
-    },
-    passwordInput(value) {
-      this.password = value;
+    register() {
+      axios
+        .post("http://localhost:3000/auth", {
+          login: this.login,
+          password: this.password,
+        })
+        .then(function (response) {
+          console.log(response);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
     },
   },
 };
 </script>
-<style scoped>
-button {
-  margin: 20px;
-}
-.img{
-  display: inline-block;
-}
-</style>

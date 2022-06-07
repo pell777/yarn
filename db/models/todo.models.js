@@ -23,10 +23,6 @@ ToDo.init(
       type: Sequelize.STRING,
       defaultValue: "",
     },
-    isCompleted: {
-      type: Sequelize.BOOLEAN,
-      defaultValue: false,
-    },
   },
   { sequelize: sequelizeInstance, underscored: true, modelName: "todo" }
 );

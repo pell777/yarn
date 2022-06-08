@@ -2,28 +2,55 @@
   <div id="app">
     <form class="login">
       <h1>Регистрация</h1>
-      <label>Введите свой Логин </label>
-
-      <input required v-model="login" type="login" placeholder="login" />
-      <br />
-      <br />
-      <label>Введите свой пароль </label>
-      <input required v-model="password" type="password" placeholder="Пароль" />
-      <br />
-      <br />
-      <label>Подтвердите свой пароль </label>
-      <input
-        required
-        v-model="passwordConfirm"
-        type="password"
-        placeholder="Пароль"
-      />
-      <br />
-      <br />
-      <button @click="register()" type="button">Зарегистрироваться</button>
-      <p v-bind:confirm="confirm">{{ confirm }}</p>
-      <p><router-link to="/">Авторизация</router-link></p>
-      <router-view />
+      <div>
+        <table align="center">
+          <tr>
+            <td>
+              <label>Введите свой Логин </label>
+            </td>
+            <td>
+              <vs-input
+                required
+                v-model="login"
+                type="login"
+                placeholder="Логин"
+              >
+              </vs-input>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <label>Введите свой пароль </label>
+            </td>
+            <td>
+              <vs-input
+                required
+                v-model="password"
+                type="password"
+                placeholder="Пароль"
+              >
+              </vs-input>
+            </td>
+          </tr>
+          <tr>
+            <td><label>Подтвердите свой пароль </label></td>
+            <td>
+              <vs-input
+                required
+                v-model="passwordConfirm"
+                type="password"
+                placeholder="Повторите пароль"
+              >
+              </vs-input>
+            </td>
+          </tr>
+        </table>
+        <br />
+        <button @click="register()" type="button">Зарегистрироваться</button>
+        <p v-bind:confirm="confirm">{{ confirm }}</p>
+        <p><router-link to="/">Авторизация</router-link></p>
+        <router-view />
+      </div>
     </form>
   </div>
 </template>
@@ -75,7 +102,11 @@ export default {
               });
             localStorage.setItem(g.id, g.token);
             console.log(localStorage.length);
+            function confirrm() {
+              return this.$router.push("/");
+            }
             this.confirm = "Регистрация прошла успешно";
+            setTimeout(confirrm, 5000);
           } else {
             this.confirm = "Пароли не совпадают";
           }
@@ -89,3 +120,8 @@ export default {
   },
 };
 </script>
+<style scoped>
+input {
+  margin: 0 auto;
+}
+</style>

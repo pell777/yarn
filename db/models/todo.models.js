@@ -19,10 +19,6 @@ ToDo.init(
       type: Sequelize.STRING,
       defaultValue: "",
     },
-    token: {
-      type: Sequelize.STRING,
-      defaultValue: "",
-    },
   },
   { sequelize: sequelizeInstance, underscored: true, modelName: "todo" }
 );

@@ -34,19 +34,29 @@ export default {
       this.confirm = " ";
       const p = await axios
         .get("http://localhost:3000/authorization", {
-          params: { login: this.login, password: this.password },
+          params: {
+            login: this.login,
+            password: this.password,
+          },
         })
         .then(function (response) {
-          return response.data.message;
+          console.log(response.data);
+          console.log(localStorage.length);
+          return response.data;
         })
         .catch(function (error) {
           console.log(error);
         });
-      console.log(p);
-      if (p === true) {
-        this.$router.push('Main')
+      if (p === "Логин") {
+        this.confirm = "Пользователь не зарегестрирован";
+      } else if (p === "Пароль") {
+        this.confirm = "Неправильный пароль";
       } else {
-        this.confirm = "Неверный логин или пароль";
+        if (localStorage.getItem(p)) {
+          this.$router.push("/Main");
+        } else {
+          this.confirm = "Нет Токена";
+        }
       }
     },
   },

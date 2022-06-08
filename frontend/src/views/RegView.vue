@@ -8,7 +8,7 @@
       <br />
       <br />
       <label>Введите свой пароль </label>
-      <input v-model="password" type="password" placeholder="Пароль" />
+      <input required v-model="password" type="password" placeholder="Пароль" />
       <br />
       <br />
       <label>Подтвердите свой пароль </label>
@@ -39,7 +39,6 @@ export default {
       password: "",
       passwordConfirm: "",
       confirm: "",
-      TOKEN: "1a2b-3c4d-5e6f-7g8h",
     };
   },
   methods: {
@@ -57,16 +56,25 @@ export default {
             console.log(error);
           });
 
-        if (p) {
+        if (!p) {
           if (this.password === this.passwordConfirm) {
-            await axios
+            const g = await axios
               .post("http://localhost:3000/register", {
                 login: this.login,
                 password: this.password,
               })
+              .then(function (response) {
+                const otvet = {
+                  id: response.data.id2,
+                  token: response.data.token,
+                };
+                return otvet;
+              })
               .catch(function (error) {
                 console.log(error);
               });
+            localStorage.setItem(g.id, g.token);
+            console.log(localStorage.length);
             this.confirm = "Регистрация прошла успешно";
           } else {
             this.confirm = "Пароли не совпадают";

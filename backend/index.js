@@ -23,12 +23,10 @@ app.use((req, res, next) => {
   console.log("METHOD = ", req.method);
   console.log("HOST = ", req.headers.host);
   console.log("IsSecure = ", req.secure);
-  console.log("BODY", req.body);
-  console.log("QUERY", req.query.login);
-  console.log("QUERY", req.query.password);
-  console.log("login", req.body.login);
-  console.log("params", req.params);
-
+  console.log("QUERY login", req.query.login);
+  console.log("QUERY password", req.query.password);
+  console.log("BODY login", req.body.login);
+  console.log("BODY password", req.body.password);
   next();
 });
 
@@ -36,20 +34,23 @@ app.post("/register", async (req, res) => {
   //РЕГИСТРАЦИЯ
   try {
     const hashPassword = bcrypt.hashSync(req.body.password, 5); //ХЕШИРОВАНИЕ ПАРОЛЯ
-    const token1 = jwt.sign(
-      //СОЗДАНИЕ ТОКЕНА
-      {
-        login: req.body.login,
-        password: req.body.password,
-      },
-      TOKEN
-    );
+
     const todo = await ToDo.create({
       login: req.body.login,
       password: hashPassword,
-      token: token1,
     });
-    res.status(200).json(todo);
+    const token1 = jwt.sign(
+      //СОЗДАНИЕ ТОКЕНА
+      {
+        id: todo.dataValues.id,
+      },
+      TOKEN
+    );
+    const otvet = {
+      id2: todo.dataValues.id,
+      token: token1,
+    };
+    res.status(200).json(otvet);
   } catch (error) {
     res.status(500).json({ error });
   }
@@ -84,18 +85,18 @@ app.get("/authorization", async (req, res) => {
     const user = await ToDo.findOne({
       where: { login: `${req.query.login}` },
     });
-    const a = jwt.verify(user.token, TOKEN);
-    if (a) {
-      if (req.query.password === a.password) {
-        return res.status(200).json({message:true});
+    if (user) {
+      const password = bcrypt.compareSync(req.query.password, user.password);
+      if (password) {
+        return res.status(200).json(user.id);
       } else {
-        return res.status(200).json({message:false});
+        return res.status(200).json("Пароль" );
       }
     } else {
-      return res.status(200).json({message:false});
+      return res.status(200).json("Логин");
     }
   } catch (error) {
-    return res.status(200).json({message:false});
+    return res.status(500).json(error);
   }
 });
 

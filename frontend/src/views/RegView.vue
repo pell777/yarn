@@ -1,57 +1,67 @@
 <template>
-  <div id="app">
-    <form class="login">
-      <h1>Регистрация</h1>
-      <div>
-        <table align="center">
-          <tr>
-            <td>
-              <label>Введите свой Логин </label>
-            </td>
-            <td>
-              <vs-input
-                required
-                v-model="login"
-                type="login"
-                placeholder="Логин"
-              >
-              </vs-input>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <label>Введите свой пароль </label>
-            </td>
-            <td>
-              <vs-input
-                required
-                v-model="password"
-                type="password"
-                placeholder="Пароль"
-              >
-              </vs-input>
-            </td>
-          </tr>
-          <tr>
-            <td><label>Подтвердите свой пароль </label></td>
-            <td>
-              <vs-input
-                required
-                v-model="passwordConfirm"
-                type="password"
-                placeholder="Повторите пароль"
-              >
-              </vs-input>
-            </td>
-          </tr>
-        </table>
-        <br />
-        <button @click="register()" type="button">Зарегистрироваться</button>
-        <p v-bind:confirm="confirm">{{ confirm }}</p>
-        <p><router-link to="/">Авторизация</router-link></p>
-        <router-view />
-      </div>
-    </form>
+  <div id="appReg">
+    <div class="registration">
+      <form class="login">
+        <h1>Регистрация</h1>
+        <div>
+          <table align="center">
+            <tr>
+              <td>
+                <label>Введите свой Логин </label>
+              </td>
+              <td>
+                <vs-input
+                  required
+                  v-model="login"
+                  type="login"
+                  placeholder="Логин"
+                >
+                </vs-input>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <label>Введите свой пароль </label>
+              </td>
+              <td>
+                <vs-input
+                  required
+                  v-model="password"
+                  type="password"
+                  placeholder="Пароль"
+                >
+                </vs-input>
+              </td>
+            </tr>
+            <tr>
+              <td><label>Повторите свой пароль </label></td>
+              <td>
+                <vs-input
+                  required
+                  v-model="passwordConfirm"
+                  type="password"
+                  placeholder="Повторите пароль"
+                >
+                </vs-input>
+              </td>
+            </tr>
+          </table>
+          <br />
+          <vs-button
+            style="margin: 0 auto; width: 50%"
+            gradient
+            type="button"
+            @click="register()"
+          >
+            Зарегистрироваться
+          </vs-button>
+
+          <p v-bind:confirm="confirm">{{ confirm }}</p>
+          <p><router-link to="/">Авторизация</router-link></p>
+          <router-view />
+        </div>
+      </form>
+    </div>
   </div>
 </template>
 
@@ -121,7 +131,16 @@ export default {
 };
 </script>
 <style scoped>
-input {
-  margin: 0 auto;
+#appReg {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+}
+.registration {
+  border-radius: 10px;
+  margin: 15% 38%;
+  border: solid 1px black;
 }
 </style>

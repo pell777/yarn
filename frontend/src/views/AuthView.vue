@@ -1,6 +1,6 @@
 <template>
-  <div id="app">
-    <div class="registration">
+  <div id="appAuth">
+    <div class="auth">
       <form class="login">
         <h1>Вход</h1>
         <div>
@@ -41,7 +41,7 @@
         </vs-button>
         <p v-bind:confirm="confirm">{{ confirm }}</p>
         <p>
-          Нет аккаунта? <router-link to="/register">Регистрация</router-link>
+          Нет аккаунта?  <router-link to="/register"> Регистрация</router-link>
         </p>
         <router-view />
       </form>
@@ -96,38 +96,28 @@ export default {
 </script>
 
 <style>
-#app {
+#appAuth {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-}
-.registration {
-  margin: 15% 41%;
-  border: solid 1px black;
-}
-input {
-  margin: 0%;
+  background-color: #f1f1e9;
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
+  height: 100%;
 }
-nav {
-  padding: 30px;
-}
-table {
-}
-h1 {
-  margin: 3%;
-}
-button {
-  margin: 3%;
-}
-nav a {
-  font-weight: bold;
-  color: #2c3e50;
+.auth {
+  background-color: rgb(236, 236, 236);
+  border-radius: 10px;
+  box-shadow: 0 0 5px 3px;
+  margin: 15% 41%;
+  border: solid 2px rgb(36, 35, 35);
 }
 
-nav a.router-link-exact-active {
-  color: #42b983;
+h1 {
+  margin: 3%;
 }
 </style>

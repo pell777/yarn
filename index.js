@@ -5,7 +5,10 @@ const http = require("http");
 const cors = require("cors");
 const fs = require("fs");
 const { initDB } = require("../db");
-const ToDo = require("../db/models/todo.models");
+const Course = require("../db/models/course.models");
+const Enrolment = require("../db/models/enrolment.models");
+const Event = require("../db/models/event.models");
+const User = require("../db/models/user.models");
 const { user } = require("pg/lib/defaults");
 
 const SERVER_PORT = process.env.PORT || 3000;
@@ -35,19 +38,19 @@ app.post("/register", async (req, res) => {
   try {
     const hashPassword = bcrypt.hashSync(req.body.password, 5); //ХЕШИРОВАНИЕ ПАРОЛЯ
 
-    const todo = await ToDo.create({
+    const user = await User.create({
       login: req.body.login,
       password: hashPassword,
     });
     const token1 = jwt.sign(
       //СОЗДАНИЕ ТОКЕНА
       {
-        id: todo.dataValues.id,
+        id: user.dataValues.id,
       },
       TOKEN
     );
     const otvet = {
-      id2: todo.dataValues.id,
+      id2: user.dataValues.id,
       token: token1,
     };
     res.status(200).json(otvet);
@@ -60,7 +63,7 @@ app.get("/auth/all", async (req, res) => {
   //ПОЛУЧИТЬ ВСЕХ
 
   try {
-    res.status(200).json(await ToDo.findAll());
+    res.status(200).json(await User.findAll());
   } catch (error) {
     res.status(500).json(error);
   }
@@ -69,7 +72,7 @@ app.get("/auth/all", async (req, res) => {
 app.get("/oneUser", async (req, res) => {
   //ПОЛУЧИТЬ ПО ЛОГИНУ
   try {
-    const user = await ToDo.findOne({
+    const user = await User.findOne({
       where: {
         login: `${req.query.login}`,
       },
@@ -82,7 +85,7 @@ app.get("/oneUser", async (req, res) => {
 
 app.get("/authorization", async (req, res) => {
   try {
-    const user = await ToDo.findOne({
+    const user = await User.findOne({
       where: { login: `${req.query.login}` },
     });
     if (user) {
@@ -90,7 +93,7 @@ app.get("/authorization", async (req, res) => {
       if (password) {
         return res.status(200).json(user.id);
       } else {
-        return res.status(200).json("Пароль" );
+        return res.status(200).json("Пароль");
       }
     } else {
       return res.status(200).json("Логин");
@@ -102,11 +105,11 @@ app.get("/authorization", async (req, res) => {
 
 app.delete("/auth/:login/:password", async (req, res) => {
   // УДАЛЕНИЕ ПОЛЬЗОВАТЕЛЯ
-  const user = await ToDo.findOne({ where: { login: req.params.login } });
+  const user = await User.findOne({ where: { login: req.params.login } });
   const password = bcrypt.compareSync(req.params.password, user.password);
   if (password) {
     try {
-      await ToDo.destroy({
+      await User.destroy({
         where: {
           login: `${req.params.login}`,
         },
@@ -117,6 +120,20 @@ app.delete("/auth/:login/:password", async (req, res) => {
     }
   } else {
     res.status(200).json({ message: "Неверный логин или пароль" });
+  }
+});
+
+app.get("/delete", async (req, res) => {
+  //Удалить ВСЕХ
+
+  try {
+    await User.destroy({
+      where: {
+        
+      }
+    });
+  } catch (error) {
+    res.status(500).json(error);
   }
 });
 
